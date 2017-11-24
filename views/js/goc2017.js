@@ -8,7 +8,7 @@ var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, c
 var instruments = [ 'acoustic_grand_piano-mp3.js', 'acoustic_bass-mp3.js', 'guitar_harmonics-mp3.js', 'acoustic_guitar_steel-mp3.js','acoustic_guitar_nylon-mp3.js']
 var volume = [1,0,0,0,0];
 var instrumentsSoundfont = [];
-var songs = ["cantina", "bruno"]
+var songs = ["cantina", "bruno", "acdc"];
 
 init();
 changeBackground(0);
@@ -40,8 +40,11 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
+<<<<<<< Updated upstream
 
     loadSong(0);
+=======
+>>>>>>> Stashed changes
 
     loadModel();
 
@@ -101,8 +104,7 @@ function loadInstrument(index, song){
 
 
         loadDataUri = function() {
-            var Player;
-                    instrumentsSoundfont[index] = [instrument,Player];
+            var Player;        
             var xhr = new XMLHttpRequest();
             xhr.open('get', "http://localhost:8000/midi/" + song + "/" + instruments[index] +".mid");
             xhr.responseType = 'blob'; // we request the response to be a Blob
@@ -111,6 +113,7 @@ function loadInstrument(index, song){
                 reader.readAsArrayBuffer(this.response);
                 reader.addEventListener("load", function () {
                     Player = new MidiPlayer.Player(function(event) {
+                        instrumentsSoundfont[index] = [instrument,Player];
                         if (event.name == 'Note on' && event.velocity > 0) {
                             instrument.play(event.noteName, ac.currentTime, 1/2*event.velocity/100);
                             console.log(event);
@@ -135,6 +138,12 @@ function changeBackground(index) {
         case 0:
         image = "background.jpg"
         break;
+        case 1:
+        image = "street.jpg"
+        break;
+        case 2:
+        image = "stage.jpg"
+        break;
     }
     document.body.style.background = "url('images/" + image + "') left top / cover no-repeat";
 }
@@ -155,6 +164,7 @@ function stopSong(){
     if (instrumentsSoundfont && instrumentsSoundfont.length){
         for (i=0; i<instrumentsSoundfont.length; i++){
             instrumentsSoundfont[i][0].stop();
+            instrumentsSoundfont[i][1].stop();
         }
     }
 
