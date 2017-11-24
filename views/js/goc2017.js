@@ -10,7 +10,7 @@ function init() {
 
     camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.set( 0, 0, 10 );
-    scene.add(camera);    
+    scene.add(camera);
 
     var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
     scene.add( ambientLight );
@@ -32,27 +32,54 @@ function init() {
     loadModel();
 }
 
-function loadModel() {    
+function loadModel() {
 
     var loader = new THREE.ColladaLoader();
     loader.load('models/stormtropper.dae', function ( collada ) {
         collada.scene.traverse(child => {
             if (child instanceof THREE.SkinnedMesh) {
-                mesh = child;             
+                mesh = child;
             }
         });
 
         mesh.rotation.z = 3;
 
+        var map = new Object();
+        map["ShoulderLeft"] = 6;
+        map["ShoulderRight"]= 25;
+        map["ElbowLeft"]= 8;
+        map["ElbowRight"] = 27;
+        map["WristLeft"] = 9;
+        map["WristRight"] = 28;
+        map["Neck"] = 4;
+        map["Head"] = 5;
+        map["SpineShoulder"] = 3;
+        map["SpineMid"] = 1; //QUizas 0
+        map["SpineBase"] = 0;
+        map["HipLeft"] = 44;
+        map["HipRight"] = 48;
+        map["KneeLeft"] = 45;
+        map["KneeRight"] = 49;
+        map["AnkleLeft"] = 46;
+        map["AnkleRight"] = 50;
+        map["FootLeft"] = 47;
+        map["FootRight"] = 51;
+        map["ThumbLeft"] = 53;
+        map["ThumbRight"] =58;
+
+
+
+
+
         skeleton = new THREE.SkeletonHelper(mesh);
         skeleton.visible = true;
         scene.add(skeleton);
-        
+
         var animations = collada.animations;
-        mixer = new THREE.AnimationMixer(mesh);        
-        //var action = mixer.clipAction(animations[ 0 ]).play(); 
-        scene.add(mesh);      
-        
+        mixer = new THREE.AnimationMixer(mesh);
+        //var action = mixer.clipAction(animations[ 0 ]).play();
+        scene.add(mesh);
+
         mesh.skeleton.bones[0].position.x = 1;
         mesh.skeleton.bones[3].position.y = 2;
         mesh.skeleton.bones[10].position.x = 1;
@@ -67,18 +94,18 @@ function animate() {
 }
 
 function onWindowResize() {
-    
+
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
-    
+
 }
 
-function render() {    
+function render() {
     var delta = clock.getDelta();
-    
-    if ( mixer !== undefined ) {    
+
+    if ( mixer !== undefined ) {
         mixer.update( delta );
     }
-    renderer.render(scene, camera);  
+    renderer.render(scene, camera);
 }
