@@ -2,4 +2,4 @@
 applications:
  - name: InterfaceHackaton
    random-route: true
-   memory: 256M
+   memory: 190M
