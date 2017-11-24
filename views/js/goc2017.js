@@ -40,11 +40,6 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
-<<<<<<< Updated upstream
-
-    loadSong(0);
-=======
->>>>>>> Stashed changes
 
     loadModel();
 
