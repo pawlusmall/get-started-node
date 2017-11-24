@@ -39,6 +39,8 @@ function init() {
 
 }
 
+var MainMesh;
+
 function loadModel() {
 
     var loader = new THREE.ColladaLoader();
@@ -51,19 +53,13 @@ function loadModel() {
 
         mesh.rotation.z = 3;
 
-        skeleton = new THREE.SkeletonHelper(mesh);
-        skeleton.visible = true;
-        scene.add(skeleton);
-
         var animations = collada.animations;
         mixer = new THREE.AnimationMixer(mesh);
         //var action = mixer.clipAction(animations[ 0 ]).play();
-        scene.add(mesh);
+        //scene.add(collada.scene);
 
-        mesh.skeleton.bones[0].position.x = 1;
-        mesh.skeleton.bones[3].position.y = 2;
-        mesh.skeleton.bones[10].position.x = 1;
-        mesh.skeleton.bones[20].position.y = 2;
+        MainMesh = mesh;
+
     });
 
 }
