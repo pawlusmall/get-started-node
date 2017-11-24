@@ -1,7 +1,9 @@
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
-var AudioContext = window.AudioContext || window.webkitAudioContext || false; 
+var AudioContext = window.AudioContext || window.webkitAudioContext || false;
 var ac = new AudioContext || new webkitAudioContext
+
+
 
 init();
 animate();
@@ -48,33 +50,6 @@ function loadModel() {
         });
 
         mesh.rotation.z = 3;
-
-        var map = new Object();
-        map["ShoulderLeft"] = 6;
-        map["ShoulderRight"]= 25;
-        map["ElbowLeft"]= 8;
-        map["ElbowRight"] = 27;
-        map["WristLeft"] = 9;
-        map["WristRight"] = 28;
-        map["Neck"] = 4;
-        map["Head"] = 5;
-        map["SpineShoulder"] = 3;
-        map["SpineMid"] = 1; //QUizas 0
-        map["SpineBase"] = 0;
-        map["HipLeft"] = 44;
-        map["HipRight"] = 48;
-        map["KneeLeft"] = 45;
-        map["KneeRight"] = 49;
-        map["AnkleLeft"] = 46;
-        map["AnkleRight"] = 50;
-        map["FootLeft"] = 47;
-        map["FootRight"] = 51;
-        map["ThumbLeft"] = 53;
-        map["ThumbRight"] =58;
-
-
-
-
 
         skeleton = new THREE.SkeletonHelper(mesh);
         skeleton.visible = true;
@@ -130,11 +105,11 @@ function loadMIDILib(){
                 });
 
                 Player.loadArrayBuffer(reader.result);
-                
+
                 play();
             }, false);
         }
-    });    
+    });
 }
 
 function loadMIDIPlayer(){
@@ -146,5 +121,3 @@ function loadMIDIPlayer(){
         instrument.play();
     });
 }
-
-
