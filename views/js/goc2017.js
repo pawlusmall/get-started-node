@@ -1,10 +1,10 @@
 var MidiPlayer = require('MidiPlayer');
-
-var loadFile, loadDataUri, Player;
+var loadFile, loadDataUri;
 var AudioContext = window.AudioContext || window.webkitAudioContext || false; 
-var ac = new AudioContext || new webkitAudioContext;
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
+
+var instruments = ['acoustic_guitar_nylon-mp3.js', 'flute-mp3.js', 'steel_drums-mp3.js', 'flute-mp3.js', 'acoustic_grand_piano-mp3.js']
 
 init();
 changeBackground(0);
@@ -36,6 +36,13 @@ function init() {
 
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );    
+
+    loadInstrument(instruments[1], "cantina");
+    loadInstrument(instruments[0], "cantina");
+    //loadInstrument(instruments[2], "cantina");
+    loadInstrument(instruments[3], "cantina");
+    loadInstrument(instruments[4], "cantina");
+
 
     loadModel();
 
@@ -92,28 +99,37 @@ function render() {
     renderer.render(scene, camera);
 }
 
-    
-    
-var xhr = new XMLHttpRequest();
-xhr.open('get', "http://localhost:8000/midi/CantinaBand.mid");
-xhr.responseType = 'blob'; // we request the response to be a Blob
-xhr.onload = function(e){
-    var reader  = new FileReader();
-    reader.readAsArrayBuffer(this.response);
-    reader.addEventListener("load", function () {
-        Player = new MidiPlayer.Player(function(event) {
-            
-        });
-        Player.loadArrayBuffer(reader.result);
-        Player.play();
+
+function loadInstrument(ins, song){
+    var ac = new AudioContext || new webkitAudioContext;
+    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+"acoustic_grand_piano-mp3.js" ).then(function (instrument) {
+
+        loadDataUri = function() {
+            var Player;
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', "http://localhost:8000/midi/" + song + "/" + ins +".mid");
+            xhr.responseType = 'blob'; // we request the response to be a Blob
+            xhr.onload = function(e){
+                var reader  = new FileReader();
+                reader.readAsArrayBuffer(this.response);
+                reader.addEventListener("load", function () {
+                    Player = new MidiPlayer.Player(function(event) {
+                        if (event.name == 'Note on' && event.velocity > 0) {
+                            instrument.play(event.noteName, ac.currentTime, 1/2*event.velocity, {gain:event.velocity/100});
+                            console.log(event);
+                        }
+                    });
+                    Player.loadArrayBuffer(reader.result);
+                    Player.play();
+                });
+            }
+            xhr.send();
+
+	}
+
+	loadDataUri();
     });
 }
-xhr.send();
-
-var Player = new MidiPlayer.Player(function(event) {
-	console.log(event);
-});
-
 
 function changeBackground(index) {
     var image;
@@ -124,4 +140,3 @@ function changeBackground(index) {
     }
     document.body.style.background = "url('images/" + image + "') left top / cover no-repeat";
 }
-    
