@@ -7,6 +7,7 @@ var ac = new AudioContext || new webkitAudioContext;
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
 
 init();
+changeBackground(0);
 animate();
 
 function init() {
@@ -25,15 +26,16 @@ function init() {
     directionalLight.position.set( 1, 1, - 1 );
     scene.add( directionalLight );
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true});
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor( 0xffffff, 0 );
 
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.addEventListener( 'change', render );
 
     document.body.appendChild(renderer.domElement);
-    window.addEventListener( 'resize', onWindowResize, false );
+    window.addEventListener( 'resize', onWindowResize, false );    
 
     loadModel();
 
@@ -90,15 +92,36 @@ function render() {
     renderer.render(scene, camera);
 }
 
-Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
     
-
-    Player = new MidiPlayer.Player(function(event) {
-        if (event.name == 'Note on') {
-            instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});            
-        }
+    
+var xhr = new XMLHttpRequest();
+xhr.open('get', "http://localhost:8000/midi/CantinaBand.mid");
+xhr.responseType = 'blob'; // we request the response to be a Blob
+xhr.onload = function(e){
+    var reader  = new FileReader();
+    reader.readAsArrayBuffer(this.response);
+    reader.addEventListener("load", function () {
+        Player = new MidiPlayer.Player(function(event) {
+            
+        });
+        Player.loadArrayBuffer(reader.result);
+        Player.play();
     });
-    
-    Player.play();
-    
+}
+xhr.send();
+
+var Player = new MidiPlayer.Player(function(event) {
+	console.log(event);
 });
+
+
+function changeBackground(index) {
+    var image;
+    switch (index) {
+        case 0:
+        image = "background.jpg"
+        break;
+    }
+    document.body.style.background = "url('images/" + image + "') left top / cover no-repeat";
+}
+    
