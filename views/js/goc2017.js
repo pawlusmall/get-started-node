@@ -35,6 +35,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
 
+    loadInstrument();
     loadModel();
 
 }
@@ -90,38 +91,31 @@ function render() {
     renderer.render(scene, camera);
 }
 
-Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
-    
+function loadInstrument(){
+    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
 
-    Player = new MidiPlayer.Player(function(event) {
-
-        loadFile = function() {
-            var file    = "/midi/CantinaBand.mid"
-            var reader  = new FileReader();
-            if (file) reader.readAsArrayBuffer(file);
-
-            reader.addEventListener("load", function () {
-                Player = new MidiPlayer.Player(function(event) {
-                    if (event.name == 'Note on') {
-                        instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});
-                        //document.querySelector('#track-' + event.track + ' code').innerHTML = JSON.stringify(event);
-                    }
+        loadDataUri = function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', "http://localhost:8000/midi/cantina/mix.mid");
+            xhr.responseType = 'blob'; // we request the response to be a Blob
+            xhr.onload = function(e){
+                var reader  = new FileReader();
+                reader.readAsArrayBuffer(this.response);
+                reader.addEventListener("load", function () {
+                    Player = new MidiPlayer.Player(function(event) {
+                        if (event.name == 'Note on' && event.velocity > 0) {
+                            instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});
+                            console.log(event);
+                        }
+                    });
+                    Player.loadArrayBuffer(reader.result);
+                    Player.play();
                 });
+            }
+            xhr.send();
 
-                Player.loadArrayBuffer(reader.result);
+	}
 
-                play();
-            }, false);
-        }
-
-        console.debug(event);
-        if (event.name == 'Note on') {
-            instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});            
-        }
-
-        loadFile();
+	loadDataUri();
     });
-    
-    Player.play();
-    
-});
+}
