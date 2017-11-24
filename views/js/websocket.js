@@ -1,4 +1,4 @@
-let socket = new WebSocket('ws://interfacehackaton-ultramicroscopic-nonflexibility.mybluemix.net:8096/');
+let socket = new WebSocket('ws://websocket-claval-fibrolite.mybluemix.net/');
 
 socket.onmessage = event => {
     console.log("Message received: " + event.data)
