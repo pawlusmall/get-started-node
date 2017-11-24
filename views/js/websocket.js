@@ -44,17 +44,6 @@ class Body {
 
     drawCylinder() {
         for (let join of joins) {
-            /*let material = new THREE.LineBasicMaterial({
-                color: 0x0000ff
-            });
-            let geometry = new THREE.Geometry();
-            console.log(this[join[0]])
-            geometry.vertices.push(
-                this[join[0]],
-                this[join[1]]
-            );
-            let line = new THREE.Line(geometry, material);
-            scene.add(line);*/
             scene.add(Body.wayMesh(this[join[0]], this[join[1]]))
         }
     }
