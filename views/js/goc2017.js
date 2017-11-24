@@ -94,9 +94,32 @@ Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-sound
     
 
     Player = new MidiPlayer.Player(function(event) {
+
+        loadFile = function() {
+            var file    = "/midi/CantinaBand.mid"
+            var reader  = new FileReader();
+            if (file) reader.readAsArrayBuffer(file);
+
+            reader.addEventListener("load", function () {
+                Player = new MidiPlayer.Player(function(event) {
+                    if (event.name == 'Note on') {
+                        instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});
+                        //document.querySelector('#track-' + event.track + ' code').innerHTML = JSON.stringify(event);
+                    }
+                });
+
+                Player.loadArrayBuffer(reader.result);
+
+                play();
+            }, false);
+        }
+
+        console.debug(event);
         if (event.name == 'Note on') {
             instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});            
         }
+
+        loadFile();
     });
     
     Player.play();
