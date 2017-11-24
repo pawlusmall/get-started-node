@@ -1,4 +1,4 @@
-let socket = new WebSocket('ws://interfacehackaton-subtetanical-myxomatous.mybluemix.net:8080/');
+let socket = new WebSocket('ws://http://interfacehackaton-ultramicroscopic-nonflexibility.mybluemix.net/:8096/');
 
 socket.onmessage = event => {
     console.log("Message received: " + event.data)
