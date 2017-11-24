@@ -37,11 +37,11 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );    
 
-    loadInstrument(instruments[1], "cantina");
+    /*loadInstrument(instruments[1], "cantina");
     loadInstrument(instruments[0], "cantina");
     //loadInstrument(instruments[2], "cantina");
     loadInstrument(instruments[3], "cantina");
-    loadInstrument(instruments[4], "cantina");
+    loadInstrument(instruments[4], "cantina");*/
 
 
     loadModel();
