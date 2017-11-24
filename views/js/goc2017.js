@@ -16,7 +16,7 @@ function init() {
 
     camera = new THREE.PerspectiveCamera( 25, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.set( 0, 0, 10 );
-    scene.add(camera);    
+    scene.add(camera);
 
     var ambientLight = new THREE.AmbientLight( 0xffffff, 0.2 );
     scene.add( ambientLight );
@@ -39,13 +39,13 @@ function init() {
 
 }
 
-function loadModel() {    
+function loadModel() {
 
     var loader = new THREE.ColladaLoader();
     loader.load('models/stormtropper.dae', function ( collada ) {
         collada.scene.traverse(child => {
             if (child instanceof THREE.SkinnedMesh) {
-                mesh = child;             
+                mesh = child;
             }
         });
 
@@ -54,12 +54,12 @@ function loadModel() {
         skeleton = new THREE.SkeletonHelper(mesh);
         skeleton.visible = true;
         scene.add(skeleton);
-        
+
         var animations = collada.animations;
-        mixer = new THREE.AnimationMixer(mesh);        
-        //var action = mixer.clipAction(animations[ 0 ]).play(); 
-        scene.add(mesh);      
-        
+        mixer = new THREE.AnimationMixer(mesh);
+        //var action = mixer.clipAction(animations[ 0 ]).play();
+        scene.add(mesh);
+
         mesh.skeleton.bones[0].position.x = 1;
         mesh.skeleton.bones[3].position.y = 2;
         mesh.skeleton.bones[10].position.x = 1;
@@ -74,22 +74,21 @@ function animate() {
 }
 
 function onWindowResize() {
-    
+
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
-    
+
 }
 
-function render() {    
+function render() {
     var delta = clock.getDelta();
-    
-    if ( mixer !== undefined ) {    
+
+    if ( mixer !== undefined ) {
         mixer.update( delta );
     }
-    renderer.render(scene, camera);  
+    renderer.render(scene, camera);
 }
-
 
 Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
     
