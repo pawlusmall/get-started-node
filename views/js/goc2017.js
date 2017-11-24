@@ -7,6 +7,7 @@ var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, c
 var instruments = ['acoustic_guitar_nylon-mp3.js', 'flute-mp3.js', 'steel_drums-mp3.js', 'flute-mp3.js', 'acoustic_grand_piano-mp3.js']
 
 init();
+changeBackground(0);
 animate();
 
 function init() {
@@ -25,15 +26,16 @@ function init() {
     directionalLight.position.set( 1, 1, - 1 );
     scene.add( directionalLight );
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true , alpha: true});
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor( 0xffffff, 0 );
 
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.addEventListener( 'change', render );
 
     document.body.appendChild(renderer.domElement);
-    window.addEventListener( 'resize', onWindowResize, false );
+    window.addEventListener( 'resize', onWindowResize, false );    
 
     loadInstrument(instruments[1], "cantina");
     loadInstrument(instruments[0], "cantina");
@@ -93,6 +95,7 @@ function render() {
     renderer.render(scene, camera);
 }
 
+
 function loadInstrument(ins, song){
     var ac = new AudioContext || new webkitAudioContext;
     Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+"acoustic_grand_piano-mp3.js" ).then(function (instrument) {
@@ -122,4 +125,14 @@ function loadInstrument(ins, song){
 
 	loadDataUri();
     });
+}
+
+function changeBackground(index) {
+    var image;
+    switch (index) {
+        case 0:
+        image = "background.jpg"
+        break;
+    }
+    document.body.style.background = "url('images/" + image + "') left top / cover no-repeat";
 }
