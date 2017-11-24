@@ -1,7 +1,7 @@
 var MidiPlayer = require('MidiPlayer');
 
 var loadFile, loadDataUri, Player;
-var AudioContext = window.AudioContext || window.webkitAudioContext || false; 
+var AudioContext = window.AudioContext || window.webkitAudioContext || false;
 var ac = new AudioContext || new webkitAudioContext;
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
@@ -37,7 +37,8 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
 
-    loadInstrument(instruments[0],);
+    loadInstrument(instruments[2]);
+    loadInstrument(instruments[1]);
     loadModel();
 
 }
