@@ -6,7 +6,7 @@ var ac = new AudioContext || new webkitAudioContext;
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
 
-var instruments = ['https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js']
+var instruments = ['acoustic_guitar_nylon-mp3.js', 'trumpet-mp3.js', 'steel_drums-mp3.js', 'clarinet-mp3.js', 'acoustic_grand_piano-mp3.js']
 
 init();
 animate();
@@ -94,11 +94,11 @@ function render() {
 }
 
 function loadInstrument(ins){
-    Soundfont.instrument(ac, ins).then(function (instrument) {
+    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+ins).then(function (instrument) {
 
         loadDataUri = function() {
             var xhr = new XMLHttpRequest();
-            xhr.open('get', "http://localhost:8000/midi/cantina/mix.mid");
+            xhr.open('get', "http://localhost:8000/midi/cantina/" + ins +".mid");
             xhr.responseType = 'blob'; // we request the response to be a Blob
             xhr.onload = function(e){
                 var reader  = new FileReader();
