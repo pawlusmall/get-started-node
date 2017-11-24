@@ -109,6 +109,12 @@ socket.onclose = () => {
 };
 let a = 0;
 socket.onmessage = event => {
+    /*a += 1;
+    if (a % 3 !== 0) {
+        return
+    }
+    a -= 3;*/
+
     let data = JSON.parse(event.data)
     let users = data.payload.user;
 
