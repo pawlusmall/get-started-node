@@ -1,10 +1,14 @@
 var MidiPlayer = require('MidiPlayer');
 var loadFile, loadDataUri;
 var AudioContext = window.AudioContext || window.webkitAudioContext || false; 
+var ac = new AudioContext || new webkitAudioContext;
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
 
-var instruments = ['acoustic_guitar_nylon-mp3.js', 'flute-mp3.js', 'steel_drums-mp3.js', 'flute-mp3.js', 'acoustic_grand_piano-mp3.js']
+var instruments = [ 'acoustic_grand_piano-mp3.js', 'acoustic_bass-mp3.js', 'guitar_harmonics-mp3.js', 'acoustic_guitar_steel-mp3.js','acoustic_guitar_nylon-mp3.js']
+var volume = [1,0,0,0,0];
+var instrumentsSoundfont = [];
+var songs = ["cantina", "bruno"]
 
 init();
 changeBackground(0);
@@ -37,12 +41,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );    
 
-    loadInstrument(instruments[1], "cantina");
-    loadInstrument(instruments[0], "cantina");
-    //loadInstrument(instruments[2], "cantina");
-    loadInstrument(instruments[3], "cantina");
-    loadInstrument(instruments[4], "cantina");
-
+    loadSong(0);
 
     loadModel();
 
@@ -96,14 +95,16 @@ function render() {
 }
 
 
-function loadInstrument(ins, song){
-    var ac = new AudioContext || new webkitAudioContext;
-    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+"acoustic_grand_piano-mp3.js" ).then(function (instrument) {
+
+function loadInstrument(index, song){
+    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+instruments[index],{gain:volume[index]}).then(function (instrument) {
+
 
         loadDataUri = function() {
             var Player;
+                    instrumentsSoundfont[index] = [instrument,Player];
             var xhr = new XMLHttpRequest();
-            xhr.open('get', "http://localhost:8000/midi/" + song + "/" + ins +".mid");
+            xhr.open('get', "http://localhost:8000/midi/" + song + "/" + instruments[index] +".mid");
             xhr.responseType = 'blob'; // we request the response to be a Blob
             xhr.onload = function(e){
                 var reader  = new FileReader();
@@ -111,7 +112,7 @@ function loadInstrument(ins, song){
                 reader.addEventListener("load", function () {
                     Player = new MidiPlayer.Player(function(event) {
                         if (event.name == 'Note on' && event.velocity > 0) {
-                            instrument.play(event.noteName, ac.currentTime, 1/2*event.velocity, {gain:event.velocity/100});
+                            instrument.play(event.noteName, ac.currentTime, 1/2*event.velocity/100);
                             console.log(event);
                         }
                     });
@@ -127,6 +128,7 @@ function loadInstrument(ins, song){
     });
 }
 
+
 function changeBackground(index) {
     var image;
     switch (index) {
@@ -135,4 +137,25 @@ function changeBackground(index) {
         break;
     }
     document.body.style.background = "url('images/" + image + "') left top / cover no-repeat";
+}
+
+function loadSong(indexSong){
+    stopSong();
+    if (indexSong > songs.length-1)
+        indexSong = 0;
+    changeBackground(indexSong);
+    loadInstrument(0, songs[indexSong]);
+    loadInstrument(1, songs[indexSong]);
+    loadInstrument(2, songs[indexSong]);
+    loadInstrument(3, songs[indexSong]);
+    loadInstrument(4, songs[indexSong]);
+}
+
+function stopSong(){
+    if (instrumentsSoundfont && instrumentsSoundfont.length){
+        for (i=0; i<instrumentsSoundfont.length; i++){
+            instrumentsSoundfont[i][0].stop();
+        }
+    }
+
 }
