@@ -164,3 +164,12 @@ function stopSong(){
     }
 
 }
+
+function setVolume(){
+    volume = [1,1,1,1,1];
+}
+
+function muteVolume(){
+    volume = [1,0,0,0,0];
+}
+
