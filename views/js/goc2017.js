@@ -6,6 +6,8 @@ var ac = new AudioContext || new webkitAudioContext;
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
 
+var instruments = ['https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js']
+
 init();
 animate();
 
@@ -35,7 +37,7 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
 
-    loadInstrument();
+    loadInstrument(instruments[0],);
     loadModel();
 
 }
@@ -91,8 +93,8 @@ function render() {
     renderer.render(scene, camera);
 }
 
-function loadInstrument(){
-    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
+function loadInstrument(ins){
+    Soundfont.instrument(ac, ins).then(function (instrument) {
 
         loadDataUri = function() {
             var xhr = new XMLHttpRequest();
