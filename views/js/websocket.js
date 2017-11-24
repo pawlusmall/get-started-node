@@ -115,6 +115,14 @@ socket.onmessage = event => {
     }
     a -= 3;*/
 
+     if(event.data.startsWith("COMMAND")){
+        let index = Number(event.data.split("_").pop());
+        console.log(index)
+        loadSong(index);
+        console.log(event.data);
+        return;
+      }
+
     let data = JSON.parse(event.data)
     let users = data.payload.user;
 
