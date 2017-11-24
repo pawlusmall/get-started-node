@@ -20,10 +20,9 @@ class Body {
     update(bodyparts) {
         let i = 0;
         while (scene.children.length > i) {
-            if (scene.children[i] === this.headSprite ||scene.children) {
+            if (scene.children[i].name === "nodelete") {
                 i += 1;
             } else {
-                console.log(scene.children[i].name);
                 scene.remove(scene.children[i]);
             }
         }
@@ -31,20 +30,22 @@ class Body {
             if (bodypart.name.includes("Tip") || bodypart.name.includes('Thumb')) {
                 continue;
             }
-            this[bodypart.name] = new THREE.Vector3(
-                bodypart.positions[0].x,
-                bodypart.positions[0].y,
-                -bodypart.positions[0].z
-            );
-            let geometry = new THREE.SphereGeometry(0.05, 32, 32);
+            if (this[bodypart.name]) {
+                this[bodypart.name].position.x = bodypart.positions[0].x;
+                this[bodypart.name].position.y = bodypart.positions[0].y;
+                this[bodypart.name].position.z = -bodypart.positions[0].z;
+            } else {
+                let geometry = new THREE.SphereGeometry(0.05, 32, 32);
 
-            var material = new THREE.MeshBasicMaterial({color: 0x000000});
-            var sphere = new THREE.Mesh(geometry, material);
-            sphere.position.x = bodypart.positions[0].x;
-            sphere.position.y = bodypart.positions[0].y;
-            sphere.position.z = -bodypart.positions[0].z;
-            sphere.name = "Jaja";
-            scene.add(sphere);
+                var material = new THREE.MeshBasicMaterial({color: 0x000000});
+                var sphere = new THREE.Mesh(geometry, material);
+                sphere.position.x = bodypart.positions[0].x;
+                sphere.position.y = bodypart.positions[0].y;
+                sphere.position.z = -bodypart.positions[0].z;
+                sphere.name = "nodelete";
+                this[bodypart.name] = sphere
+                scene.add(sphere);
+            }
         }
 
         if (!this.headSprite) {
@@ -56,12 +57,13 @@ class Body {
             sprite.position.z = this.Head.z + 0.2;
             sprite.scale.x = 0.4;
             sprite.scale.y = 0.4;
+            sprite.name = "nodelete";
             scene.add(sprite);
             this.headSprite = sprite
         }
-        this.headSprite.position.x = this.Head.x;
-        this.headSprite.position.y = this.Head.y;
-        this.headSprite.position.z = this.Head.z + 0.2;
+        this.headSprite.position.x = this.Head.position.x;
+        this.headSprite.position.y = this.Head.position.y;
+        this.headSprite.position.z = this.Head.position.z + 0.2;
 
 
         this.drawCylinder()
@@ -70,9 +72,9 @@ class Body {
     drawCylinder() {
         for (let join of joins) {
             if ((join[0] === 'SpineShoulder' && join[1] === 'SpineMid') || join[1] === 'SpineBase') {
-                scene.add(Body.wayMesh(this[join[0]], this[join[1]], 0.15))
+                scene.add(Body.wayMesh(this[join[0]].position, this[join[1]].position, 0.15))
             } else {
-                scene.add(Body.wayMesh(this[join[0]], this[join[1]], 0.04))
+                scene.add(Body.wayMesh(this[join[0]].position, this[join[1]].position, 0.04))
             }
         }
     }
@@ -107,12 +109,6 @@ socket.onclose = () => {
 };
 let a = 0;
 socket.onmessage = event => {
-    a += 1;
-    if (a % 5 !== 0) {
-        return
-    }
-    a -= 5;
-
     let data = JSON.parse(event.data)
     let users = data.payload.user;
 
