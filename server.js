@@ -3,6 +3,17 @@ var app = express();
 var cfenv = require("cfenv");
 var bodyParser = require('body-parser')
 
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    ws.send('something');
+  });
+
+});
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
