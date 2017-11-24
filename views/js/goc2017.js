@@ -1,9 +1,10 @@
+var MidiPlayer = require('MidiPlayer');
+var loadFile, loadDataUri;
+var AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
 var camera, scene, renderer, geometry, material, mesh, skeleton, mixer, clock, controls;
-var AudioContext = window.AudioContext || window.webkitAudioContext || false;
-var ac = new AudioContext || new webkitAudioContext
 
-
+var instruments = ['acoustic_guitar_nylon-mp3.js', 'flute-mp3.js', 'steel_drums-mp3.js', 'flute-mp3.js', 'acoustic_grand_piano-mp3.js']
 
 init();
 animate();
@@ -34,7 +35,13 @@ function init() {
     document.body.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
 
-    loadMIDIPlayer();
+    loadInstrument(instruments[1], "cantina");
+    loadInstrument(instruments[0], "cantina");
+    //loadInstrument(instruments[2], "cantina");
+    loadInstrument(instruments[3], "cantina");
+    loadInstrument(instruments[4], "cantina");
+
+
     loadModel();
 
 }
@@ -86,34 +93,33 @@ function render() {
     renderer.render(scene, camera);
 }
 
-function loadMIDILib(){
-    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
-        loadFile = function() {
-            var file    = "midi/CantinaBand.mid"
-            var reader  = new FileReader();
-            if (file) reader.readAsArrayBuffer(file);
+function loadInstrument(ins, song){
+    var ac = new AudioContext || new webkitAudioContext;
+    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/'+"acoustic_grand_piano-mp3.js" ).then(function (instrument) {
 
-            reader.addEventListener("load", function () {
-                Player = new MidiPlayer.Player(function(event) {
-                    if (event.name == 'Note on') {
-                        instrument.play(event.noteName, ac.currentTime, {gain:event.velocity/100});
-                    }
+        loadDataUri = function() {
+            var Player;
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', "http://localhost:8000/midi/" + song + "/" + ins +".mid");
+            xhr.responseType = 'blob'; // we request the response to be a Blob
+            xhr.onload = function(e){
+                var reader  = new FileReader();
+                reader.readAsArrayBuffer(this.response);
+                reader.addEventListener("load", function () {
+                    Player = new MidiPlayer.Player(function(event) {
+                        if (event.name == 'Note on' && event.velocity > 0) {
+                            instrument.play(event.noteName, ac.currentTime, 1/2*event.velocity, {gain:event.velocity/100});
+                            console.log(event);
+                        }
+                    });
+                    Player.loadArrayBuffer(reader.result);
+                    Player.play();
                 });
+            }
+            xhr.send();
 
-                Player.loadArrayBuffer(reader.result);
+	}
 
-                play();
-            }, false);
-        }
-    });
-}
-
-function loadMIDIPlayer(){
-    Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
-        var Player = new MidiPlayer.Player(function(event) {
-            console.log(event);
-        });
-        Player.loadFile('midi/CantinaBand.mid');
-        instrument.play();
+	loadDataUri();
     });
 }
